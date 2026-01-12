@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import NoteList from "@/components/NoteList/NoteList";
+import SearchBox from "@/components/SearchBox/SearchBox";
+import Pagination from "@/components/Pagination/Pagination";
+import Modal from "@/components/Modal/Modal";
+import NoteForm from "@/components/NoteForm/NoteForm";
+
 import { fetchNotes } from "@/lib/api";
 
 type Props = {
@@ -17,56 +22,64 @@ export default function NotesClient({
   initialPerPage,
   initialSearch,
 }: Props) {
-  const [page, setPage] = useState(initialPage);
-  const [search, setSearch] = useState(initialSearch);
+  const [page, setPage] = useState<number>(initialPage);
+  const [search, setSearch] = useState<string>(initialSearch);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["notes", { page, perPage: initialPerPage, search }],
+  const queryKey = useMemo(
+    () => ["notes", { page, perPage: initialPerPage, search }],
+    [page, initialPerPage, search]
+  );
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey,
     queryFn: () => fetchNotes(page, initialPerPage, search),
+    // щоб не було “мерехтіння” при переході між сторінками
+    placeholderData: (prev) => prev,
   });
 
-  if (isLoading) return <p>Loading, please wait...</p>;
-  if (error) return <p>Something went wrong.</p>;
+  const totalPages = data?.totalPages ?? 0;
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const handlePageChange = (selectedPage0: number) => {
+    // ReactPaginate працює з 0-based, а наш API/стан — 1-based
+    setPage(selectedPage0 + 1);
+  };
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <main>
       <h1>Notes</h1>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setPage(1);
-        }}
-      >
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search notes..."
-        />
-        <button type="submit">Search</button>
-      </form>
+      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <SearchBox value={search} onChange={handleSearchChange} />
+
+        <button type="button" onClick={openModal}>
+          Add note
+        </button>
+      </div>
+
+      {isLoading && <p>Loading, please wait...</p>}
+      {isError && <p>Something went wrong.</p>}
 
       {data ? <NoteList notes={data.notes} /> : null}
 
-      <div style={{ display: "flex", gap: 12 }}>
-        <button
-          type="button"
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1}
-        >
-          Prev
-        </button>
+      <Pagination
+        pageCount={totalPages}
+        forcePage={page - 1}
+        onPageChange={handlePageChange}
+      />
 
-        <span>Page: {page}</span>
-
-        <button
-          type="button"
-          onClick={() => setPage((p) => p + 1)}
-          disabled={page >= (data?.totalPages ?? 1)}
-        >
-          Next
-        </button>
-      </div>
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <h2>Create note</h2>
+        <NoteForm onClose={closeModal} />
+      </Modal>
     </main>
   );
 }

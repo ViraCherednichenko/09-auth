@@ -13,6 +13,7 @@ export default function NoteDetailsClient() {
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
     enabled: Boolean(id),
+    refetchOnMount: false,
   });
 
   if (isLoading) return <p>Loading, please wait...</p>;
@@ -20,7 +21,6 @@ export default function NoteDetailsClient() {
 
   return (
     <div className={css.container}>
-      {/* 🔙 ОТУТ */}
       <Link href="/notes">← Back to notes</Link>
 
       <div className={css.item}>
