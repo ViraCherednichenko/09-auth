@@ -1,19 +1,16 @@
 import type { ReactNode } from "react";
+import css from "./layout.module.css";
 
 type Props = {
   children: ReactNode;
   sidebar: ReactNode;
-  modal: ReactNode;
 };
 
-export default function FilterLayout({ children, sidebar, modal }: Props) {
+export default function FilterLayout({ children, sidebar }: Props) {
   return (
-    <div style={{ display: "flex", gap: "24px" }}>
-      <aside>{sidebar}</aside>
-      <section style={{ position: "relative", flex: 1 }}>
-        {children}
-        {modal}
-      </section>
+    <div className={css.container}>
+      <aside className={css.sidebar}>{sidebar}</aside>
+      <main className={css.main}>{children}</main>
     </div>
   );
 }

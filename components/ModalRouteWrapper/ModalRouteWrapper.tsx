@@ -8,7 +8,7 @@ type Props = {
   children: ReactNode;
 };
 
-export default function ModalWrapper({ children }: Props) {
+export default function ModalRouteWrapper({ children }: Props) {
   const router = useRouter();
 
   return (
