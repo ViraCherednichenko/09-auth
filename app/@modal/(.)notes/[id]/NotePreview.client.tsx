@@ -37,8 +37,16 @@ export default function NotePreviewClient({ id }: Props) {
       {!isLoading && !isError && data && (
         <div>
           <h2>{data.title}</h2>
+
           {data.content && <p>{data.content}</p>}
+
           <p>Tag: {data.tag}</p>
+          {"createdAt" in data && data.createdAt && (
+            <p>
+              Created:{" "}
+              {new Date(data.createdAt).toLocaleString()}
+            </p>
+          )}
         </div>
       )}
     </Modal>

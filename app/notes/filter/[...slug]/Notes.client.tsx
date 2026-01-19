@@ -25,12 +25,11 @@ export default function NotesClient({ tag }: Props) {
 
   const debouncedSearch = useDebounce(search, 500);
 
- const { data } = useQuery({
-  queryKey: ["notes", tag, page, debouncedSearch],
-  queryFn: () => fetchNotes(page, PER_PAGE, debouncedSearch, tag),
-  placeholderData: (prev) => prev,
-});
-
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["notes", tag, page, debouncedSearch],
+    queryFn: () => fetchNotes(page, PER_PAGE, debouncedSearch, tag),
+    placeholderData: (prev) => prev,
+  });
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -40,6 +39,8 @@ export default function NotesClient({ tag }: Props) {
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
+  const hasNotes = (data?.notes?.length ?? 0) > 0;
+
   return (
     <>
       <SearchBox value={search} onChange={handleSearchChange} />
@@ -48,14 +49,18 @@ export default function NotesClient({ tag }: Props) {
         Add note
       </button>
 
-      <NoteList notes={data?.notes ?? []} />
+      {isLoading && <p>Loading...</p>}
 
-      
-<Pagination
-  pageCount={data?.totalPages ?? 1}
-  forcePage={page - 1}
-  onPageChange={(selectedPage) => setPage(selectedPage + 1)}
-/>
+      {!isLoading && !isError && hasNotes && <NoteList notes={data!.notes} />}
+
+      {!isLoading && !isError && !hasNotes && <p>No notes found.</p>}
+
+      <Pagination
+        pageCount={data?.totalPages ?? 1}
+        forcePage={page - 1}
+        onPageChange={(selectedPage) => setPage(selectedPage + 1)}
+      />
+
       {isModalOpen && (
         <Modal isOpen={true} onClose={handleCloseModal}>
           <NoteForm onClose={handleCloseModal} />
