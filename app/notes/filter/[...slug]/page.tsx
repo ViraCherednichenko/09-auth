@@ -1,24 +1,30 @@
-import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
-import NotesClient from "./Notes.client";
-import { fetchNotes } from "@/lib/api";
+import type { Metadata } from "next";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 type Props = {
-  params: Promise<{ slug: string[] }>;
+  params: { slug?: string[] };
 };
 
-export default async function FilteredNotesPage({ params }: Props) {
-  const { slug } = await params;
-  const tag = slug[0];
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const filter = params.slug?.join("/") ?? "all";
 
-  const queryClient = new QueryClient();
+  const title = `Notes filter: ${filter} | NoteHub`;
+  const description = `Browse notes in NoteHub filtered by: ${filter}.`;
 
-await queryClient.prefetchQuery({
-  queryKey: ["notes", tag],
-  queryFn: () => fetchNotes(1, 12, undefined, tag),
-});
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotesClient tag={tag} />
-    </HydrationBoundary>
-  );
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${APP_URL}/notes/filter/${filter}`,
+      images: ["https://ac.goit.global/fullstack/react/notehub-og-meta.jpg"],
+    },
+  };
+}
+
+export default function FilterPage() {
+  // твоя SSR/CSR логіка тут (як у завданні)
+  return null;
 }
