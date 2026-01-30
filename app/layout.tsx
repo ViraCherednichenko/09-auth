@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Header from "@/components/Header/Header";
 import Providers from "@/components/Providers/Providers";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
 
 const roboto = Roboto({
   subsets: ["latin", "cyrillic"],
@@ -33,8 +34,10 @@ export default function RootLayout({
     <html lang="uk" className={roboto.variable}>
       <body>
         <Providers>
-          <Header />
-          {children}
+          <AuthProvider>
+            <Header />
+            {children}
+          </AuthProvider>
         </Providers>
       </body>
     </html>
