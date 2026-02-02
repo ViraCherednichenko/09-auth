@@ -1,5 +1,5 @@
 import { api } from "./api";
-import type { Note, NoteTag } from "@/types/note";
+import type { Note, NoteTag, NotesResponse } from "@/types/note";
 import type { User } from "@/types/user";
 
 export type FetchNotesParams = {
@@ -23,9 +23,15 @@ export type UpdateMeRequest = {
   username: string;
 };
 
-// NOTES
+export type CreateNoteRequest = {
+  title: string;
+  content?: string;
+  tag: NoteTag;
+};
+
+
 export async function fetchNotes(params: FetchNotesParams) {
-  const { data } = await api.get<Note[]>("/notes", {
+  const { data } = await api.get<NotesResponse>("/notes", {
     params: { perPage: 12, ...params },
   });
   return data;
@@ -35,12 +41,6 @@ export async function fetchNoteById(id: string) {
   const { data } = await api.get<Note>(`/notes/${id}`);
   return data;
 }
-
-export type CreateNoteRequest = {
-  title: string;
-  content?: string;
-  tag: NoteTag;
-};
 
 export async function createNote(body: CreateNoteRequest) {
   const { data } = await api.post<Note>("/notes", body);
@@ -52,7 +52,7 @@ export async function deleteNote(id: string) {
   return data;
 }
 
-// AUTH
+
 export async function register(body: RegisterRequest) {
   const { data } = await api.post<User>("/auth/register", body);
   return data;
@@ -72,7 +72,6 @@ export async function checkSession() {
   return data;
 }
 
-// USER
 export async function getMe() {
   const { data } = await api.get<User>("/users/me");
   return data;

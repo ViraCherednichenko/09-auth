@@ -8,7 +8,7 @@ import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import NoteList from "@/components/NoteList/NoteList";
 
-import { fetchNotes } from "@/lib/api/notes";
+import { fetchNotes } from "@/lib/api/clientApi";
 import type { Note, NoteTag } from "@/types/note";
 
 type NotesClientProps = {

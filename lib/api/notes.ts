@@ -1,36 +1,37 @@
-import { apiClient } from "./client";
-import type { NoteTag } from "@/types/note";
+import { api } from "./api";
+import type { Note, NoteTag, NotesResponse } from "@/types/note";
 
-type FetchNotesParams = {
-  page: number;
-  perPage?: number;
+export type FetchNotesParams = {
   search?: string;
+  page?: number;
+  perPage?: number;
   tag?: NoteTag;
 };
 
-export async function fetchNotes({
-  page,
-  perPage = 12,
-  search = "",
-  tag,
-}: FetchNotesParams) {
-  const { data } = await apiClient.get("/notes", {
-    params: { page, perPage, search, tag },
-  });
-
-  return data;
-}
-
-export async function createNote(note: {
+export type CreateNoteRequest = {
   title: string;
-  content: string;
+  content?: string;
   tag: NoteTag;
-}) {
-  const { data } = await apiClient.post("/notes", note);
+};
+
+export async function fetchNotes(params: FetchNotesParams) {
+  const { data } = await api.get<NotesResponse>("/notes", {
+    params: { perPage: 12, ...params },
+  });
   return data;
 }
 
-export async function getNoteById(id: string) {
-  const { data } = await apiClient.get(`/notes/${id}`);
+export async function fetchNoteById(id: string) {
+  const { data } = await api.get<Note>(`/notes/${id}`);
+  return data;
+}
+
+export async function createNote(body: CreateNoteRequest) {
+  const { data } = await api.post<Note>("/notes", body);
+  return data;
+}
+
+export async function deleteNote(id: string) {
+  const { data } = await api.delete<Note>(`/notes/${id}`);
   return data;
 }

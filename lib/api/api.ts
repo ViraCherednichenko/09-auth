@@ -1,17 +1,19 @@
+
+
 import axios from "axios";
 
-const baseURL = `${process.env.NEXT_PUBLIC_API_URL}/api`;
+const origin = process.env.NEXT_PUBLIC_API_URL;
+if (!origin) {
+  throw new Error("Missing NEXT_PUBLIC_API_URL");
+}
 
 export const api = axios.create({
-  baseURL,
+  baseURL: `${origin}/api`,
   withCredentials: true,
 });
 
-/* =========================
-   AUTH
-========================= */
 
-// перевірка сесії
+
 export async function getSession() {
   const { data } = await api.get("/auth/session");
   return data;

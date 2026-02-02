@@ -13,20 +13,21 @@ function resolveTag(slug?: string[]): NoteTag | undefined {
   return !rawTag || rawTag === "all" ? undefined : (rawTag as NoteTag);
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+const APP_URL =
+  (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const tag = resolveTag(slug);
 
-  const title = tag ? `Notes — ${tag}` : "Notes — All";
-  const description = tag ? `Notes filtered by tag: ${tag}.` : "All notes.";
-
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "http://localhost:3000";
+  const title = tag ? `Notes — ${tag} | NoteHub` : "Notes — All | NoteHub";
+  const description = tag
+    ? `Notes filtered by tag: ${tag}.`
+    : "All notes in NoteHub.";
 
   const path = tag ? `/notes/filter/${tag}` : "/notes/filter/all";
-  const url = `${appUrl}${path}`;
-
-  const imageUrl = `${appUrl}/og-notes.png`; // файл лежить у /public/og-notes.png
 
   return {
     title,
@@ -34,20 +35,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      url,
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: "Notes application",
-        },
-      ],
+      url: `${APP_URL}${path}`,
+      images: ["https://ac.goit.global/fullstack/react/notehub-og-meta.jpg"],
     },
   };
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function NotesFilterPage({ params }: PageProps) {
   const { slug } = await params;
   const tag = resolveTag(slug);
 

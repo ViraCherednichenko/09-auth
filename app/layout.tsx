@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
 import "./globals.css";
 
 import Header from "@/components/Header/Header";
 import Providers from "@/components/Providers/Providers";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
-
-const roboto = Roboto({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "700"],
-  variable: "--font-roboto",
-  display: "swap",
-});
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -29,9 +21,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="uk" className={roboto.variable}>
+    <html lang="uk">
       <body>
         <Providers>
           <AuthProvider>

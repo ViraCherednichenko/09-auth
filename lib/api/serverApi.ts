@@ -2,6 +2,9 @@ import { api } from "./api";
 import type { Note, NoteTag } from "@/types/note";
 import type { User } from "@/types/user";
 
+
+
+
 type FetchNotesParams = {
   search?: string;
   page?: number;

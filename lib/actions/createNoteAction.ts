@@ -1,6 +1,6 @@
 "use server";
 
-import { createNote } from "@/lib/api/notes";
+import { createNote } from "@/lib/api/clientApi";
 import type { NoteTag } from "@/types/note";
 
 export type CreateNoteActionState =
