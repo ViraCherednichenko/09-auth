@@ -4,12 +4,12 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
-import { fetchNoteById } from "@/lib/api";
+import { fetchNoteById } from "@/lib/api/clientApi";
 import css from "./NoteDetails.module.css";
 
 type Props = {
   id?: string;
-  backHref?: string; // щоб з модалки повертатись "назад" іншим способом, якщо треба
+  backHref?: string; 
 };
 
 export default function NoteDetailsClient({ id: idProp, backHref }: Props) {
@@ -28,8 +28,6 @@ export default function NoteDetailsClient({ id: idProp, backHref }: Props) {
 
   return (
     <div className={css.container}>
-      {/* Якщо backHref передали — буде звичайний Link.
-          Якщо ні — можна просто не показувати "back" (в модалці закриття через overlay/esc). */}
       {backHref ? <Link href={backHref}>← Back</Link> : null}
 
       <div className={css.item}>

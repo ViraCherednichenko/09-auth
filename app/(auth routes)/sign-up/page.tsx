@@ -3,10 +3,14 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import css from "./SignUpPage.module.css";
+
 import { register } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const setUser = useAuthStore((s) => s.setUser);
+
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,9 +31,14 @@ export default function SignUpPage() {
 
     try {
       setIsLoading(true);
-      await register({ email, password });
+
+      const user = await register({ email, password });
+
+      // ✅ оновлюємо глобальний auth state
+      setUser(user);
+
       router.push("/profile");
-    } catch (err) {
+    } catch (err: unknown) {
       setError("Registration failed");
     } finally {
       setIsLoading(false);
@@ -64,7 +73,11 @@ export default function SignUpPage() {
         </div>
 
         <div className={css.actions}>
-          <button type="submit" className={css.submitButton} disabled={isLoading}>
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={isLoading}
+          >
             {isLoading ? "Registering..." : "Register"}
           </button>
         </div>

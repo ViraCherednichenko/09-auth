@@ -1,9 +1,7 @@
+import type { AxiosResponse } from "axios";
 import { api } from "./api";
 import type { Note, NoteTag } from "@/types/note";
 import type { User } from "@/types/user";
-
-
-
 
 type FetchNotesParams = {
   search?: string;
@@ -31,9 +29,11 @@ export async function fetchNoteById(id: string, cookie?: string) {
 }
 
 // AUTH (SSR)
-export async function checkSession(cookie?: string) {
-  const { data } = await api.get<User | null>("/auth/session", withCookie(cookie));
-  return data;
+export async function checkSession(
+  cookie?: string
+): Promise<AxiosResponse<User | null>> {
+  const res = await api.get<User | null>("/auth/session", withCookie(cookie));
+  return res;
 }
 
 // USER (SSR)

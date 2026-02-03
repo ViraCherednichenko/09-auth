@@ -11,10 +11,11 @@ import NoteList from "@/components/NoteList/NoteList";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 
-type Props = {
-  tag: string;
-};
+import type { NoteTag } from "@/types/note";
 
+type Props = {
+  tag: NoteTag;
+};
 const PER_PAGE = 12;
 
 export default function NotesClient({ tag }: Props) {
@@ -25,7 +26,13 @@ export default function NotesClient({ tag }: Props) {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["notes", tag, page, debouncedSearch],
-    queryFn: () => fetchNotes(page, PER_PAGE, debouncedSearch, tag),
+    queryFn: () =>
+  fetchNotes({
+    page,
+    perPage: PER_PAGE,
+    search: debouncedSearch,
+    tag,
+  }),
     placeholderData: (prev) => prev,
   });
 

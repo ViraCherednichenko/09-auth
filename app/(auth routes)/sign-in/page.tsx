@@ -3,10 +3,14 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import css from "./SignInPage.module.css";
+
 import { login } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function SignInPage() {
   const router = useRouter();
+  const setUser = useAuthStore((s) => s.setUser);
+
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,9 +31,14 @@ export default function SignInPage() {
 
     try {
       setIsLoading(true);
-      await login({ email, password });
+
+      const user = await login({ email, password });
+
+      // ✅ оновлюємо глобальний auth state
+      setUser(user);
+
       router.push("/profile");
-    } catch {
+    } catch (err: unknown) {
       setError("Login failed");
     } finally {
       setIsLoading(false);
@@ -64,12 +73,16 @@ export default function SignInPage() {
         </div>
 
         <div className={css.actions}>
-          <button type="submit" className={css.submitButton} disabled={isLoading}>
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={isLoading}
+          >
             {isLoading ? "Logging in..." : "Log in"}
           </button>
         </div>
 
-        <p className={css.error}>{error}</p>
+        {error ? <p className={css.error}>{error}</p> : null}
       </form>
     </main>
   );

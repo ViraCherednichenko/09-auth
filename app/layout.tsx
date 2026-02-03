@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import "./globals.css";
 
 import Header from "@/components/Header/Header";
@@ -19,11 +20,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+type RootLayoutProps = {
+  children: ReactNode;
+  modal: ReactNode;
+};
+
+export default function RootLayout({ children, modal }: RootLayoutProps) {
   return (
     <html lang="uk">
       <body>
@@ -31,6 +33,7 @@ export default function RootLayout({
           <AuthProvider>
             <Header />
             {children}
+            {modal}
           </AuthProvider>
         </Providers>
       </body>
