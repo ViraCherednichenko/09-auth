@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 import Header from "@/components/Header/Header";
+import Footer from "@/components/Footer/Footer";
 import Providers from "@/components/Providers/Providers";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
 
@@ -28,12 +29,17 @@ type RootLayoutProps = {
 export default function RootLayout({ children, modal }: RootLayoutProps) {
   return (
     <html lang="uk">
-      <body>
+      <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
         <Providers>
           <AuthProvider>
             <Header />
-            {children}
-            {modal}
+
+            <main style={{ flex: 1 }}>
+              {children}
+              {modal}
+            </main>
+
+            <Footer />
           </AuthProvider>
         </Providers>
       </body>

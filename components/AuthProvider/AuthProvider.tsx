@@ -1,53 +1,38 @@
 "use client";
 
-import { useEffect } from "react";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
-
-import { useAuthStore } from "@/lib/store/authStore";
 import { checkSession, getMe } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
+
 type Props = {
   children: ReactNode;
 };
 
 export default function AuthProvider({ children }: Props) {
-  const setUser = useAuthStore((state) => state.setUser);
-  const clearIsAuthenticated = useAuthStore(
-    (state) => state.clearIsAuthenticated
-  );
+  const setUser = useAuthStore((s) => s.setUser);
+  const clearAuth = useAuthStore((s) => s.clearAuth);
 
   useEffect(() => {
-    let cancelled = false;
-
-    const initAuth = async () => {
+    const init = async () => {
       try {
-        const session = await checkSession();
+        const sessionUser = await checkSession(); // User | null
 
-        if (!session) {
-          if (!cancelled) {
-            clearIsAuthenticated();
-          }
+        if (!sessionUser) {
+          clearAuth();
           return;
         }
 
-        const user = await getMe();
-
-        if (!cancelled) {
-          setUser(user);
-        }
-      } catch (error: unknown) {
-        if (!cancelled) {
-          clearIsAuthenticated();
-        }
+        // Якщо getMe повертає актуальніший профіль — оновлюємо
+        const me = await getMe();
+        setUser(me);
+      } catch {
+        clearAuth();
       }
     };
 
-    initAuth();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [setUser, clearIsAuthenticated]);
+    void init();
+  }, [setUser, clearAuth]);
 
   return <>{children}</>;
 }
