@@ -9,8 +9,8 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const setUser = useAuthStore((s) => s.setUser);
-  const clearIsAuthenticated = useAuthStore(
-    (s) => s.clearIsAuthenticated
+  const clearAuth = useAuthStore(
+    (s) => s.clearAuth
   );
 
   useEffect(() => {
@@ -19,19 +19,19 @@ export default function AuthProvider({
         const res = await fetch("/api/auth/session");
 
         if (!res.ok) {
-          clearIsAuthenticated();
+          clearAuth();
           return;
         }
 
         const user = await res.json();
         setUser(user);
       } catch {
-        clearIsAuthenticated();
+        clearAuth();
       }
     };
 
     loadSession();
-  }, [setUser, clearIsAuthenticated]);
+  }, [setUser, clearAuth]);
 
   return <>{children}</>;
 }

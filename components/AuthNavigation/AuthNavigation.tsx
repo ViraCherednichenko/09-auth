@@ -10,13 +10,13 @@ export default function AuthNavigation() {
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const user = useAuthStore((s) => s.user);
-  const clearIsAuthenticated = useAuthStore((s) => s.clearIsAuthenticated);
+  const clearAuth = useAuthStore((s) => s.clearAuth);
 
   const handleLogout = async () => {
     try {
       await logout();
     } finally {
-      clearIsAuthenticated();
+      clearAuth();
       router.push("/sign-in");
     }
   };
