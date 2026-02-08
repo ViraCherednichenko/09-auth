@@ -18,27 +18,29 @@ function isPrivateRoute(pathname: string) {
   );
 }
 
+function buildCookieHeader(store: Awaited<ReturnType<typeof cookies>>) {
+  return store
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join("; ");
+}
+
 export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const cookieStore = await cookies();
-
   const accessToken = cookieStore.get("accessToken")?.value;
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
   if (!accessToken && refreshToken) {
     try {
-      const cookieHeader = cookieStore
-        .getAll()
-        .map((c) => `${c.name}=${c.value}`)
-        .join("; ");
-
+      const cookieHeader = buildCookieHeader(cookieStore);
       const response = await checkSession(cookieHeader);
 
       const setCookie = response.headers["set-cookie"];
 
       if (setCookie) {
-        const res = NextResponse.next();
+        const res = NextResponse.redirect(req.nextUrl);
 
         for (const cookie of setCookie) {
           res.headers.append("set-cookie", cookie);
