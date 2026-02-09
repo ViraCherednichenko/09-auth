@@ -10,6 +10,7 @@ export default function AuthNavigation() {
   const router = useRouter();
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
   const handleLogout = async () => {
@@ -26,6 +27,7 @@ export default function AuthNavigation() {
       <ul
         style={{
           display: "flex",
+          alignItems: "center",
           gap: 12,
           listStyle: "none",
           padding: 0,
@@ -45,7 +47,11 @@ export default function AuthNavigation() {
 
         {isAuthenticated && (
           <>
-            {/* 🔴 КЛЮЧОВИЙ ПУНКТ ДЛЯ МЕНТОРА */}
+            {/* ✅ ВИМОГА МЕНТОРА: email / імʼя користувача */}
+            <li style={{ fontSize: 14, opacity: 0.8 }}>
+              {user?.email}
+            </li>
+
             <li>
               <Link href="/profile">Profile</Link>
             </li>

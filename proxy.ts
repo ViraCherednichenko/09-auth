@@ -40,7 +40,12 @@ export default async function proxy(req: NextRequest) {
       const setCookie = response.headers["set-cookie"];
 
       if (setCookie) {
-        const res = NextResponse.redirect(req.nextUrl);
+        // ✅ ПІСЛЯ REFRESH:
+        // - якщо це auth-роут → /
+        // - інакше → той самий URL (повторний запит вже з новими cookie)
+        const redirectTo = isAuthRoute(pathname) ? new URL("/", req.url) : req.nextUrl;
+
+        const res = NextResponse.redirect(redirectTo);
 
         for (const cookie of setCookie) {
           res.headers.append("set-cookie", cookie);
@@ -49,6 +54,7 @@ export default async function proxy(req: NextRequest) {
         return res;
       }
     } catch {
+      // нічого — нижче спрацює звичайна логіка
     }
   }
 
@@ -58,8 +64,9 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 
+  // ✅ автентифікований користувач не має бачити sign-in / sign-up
   if (isAuthenticated && isAuthRoute(pathname)) {
-    return NextResponse.redirect(new URL("/profile", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   return NextResponse.next();
